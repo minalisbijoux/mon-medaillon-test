@@ -1,0 +1,687 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Atelier de gravure v3.9</title><style>
+@font-face{font-family:Asar;src:url('fonts/Asar-Regular.ttf')}@font-face{font-family:Sacramento;src:url('fonts/Sacramento-Regular.ttf')}
+*{box-sizing:border-box}body{margin:0;background:#f7f4ee;color:#342a25;font-family:system-ui,-apple-system,sans-serif}header{background:#302722;color:white;padding:17px 22px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}h1{margin:0;font-size:23px}h2{font-size:20px;margin:0 0 16px}main{max-width:1060px;margin:22px auto;padding:0 14px;display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,380px);gap:18px}.panel{background:white;border-radius:16px;padding:20px;box-shadow:0 5px 25px #32251d12}.preview{max-width:520px;margin:auto;aspect-ratio:1;background:#eee7dc;border-radius:14px;overflow:hidden}.preview svg{width:100%;height:100%}button,input,select{font:inherit}button{border:0;border-radius:9px;background:#45352f;color:white;padding:12px 16px;cursor:pointer}button.secondary{background:#eee7df;color:#302722}button:disabled{opacity:.4;cursor:not-allowed}label{font-weight:650;font-size:14px;display:block;margin:13px 0 5px}input,select{width:100%;border:1px solid #d6cbc0;border-radius:9px;padding:12px;background:white}.hint{font-size:13px;color:#75685d;line-height:1.55}.warning{background:#fff0d8;color:#7d4816;padding:12px;border-radius:10px;font-size:13px}.good{background:#e9f4ed;color:#245b40;padding:12px;border-radius:10px;font-size:13px}.field{border:1px solid #e7dfd7;border-radius:12px;padding:12px;margin:12px 0}.field-head{display:flex;justify-content:space-between;align-items:center}.field-head label{margin:0}.hidden{display:none!important}.wide{width:100%;margin-top:15px}.order{border-bottom:1px solid #ddd;padding:13px 0}.order button{margin:7px 5px 0 0}.pill{font-size:12px;color:#d8c7b8}#orders{grid-column:1/-1}#orders .panel{max-width:900px;margin:auto}#result{font-size:16px;font-weight:700;margin-top:12px;overflow-wrap:anywhere}@media(max-width:760px){main{grid-template-columns:1fr;margin:12px auto}.panel{padding:15px}}
+ .font-picker{position:relative;margin-top:9px}.font-trigger{width:100%;background:#fff;color:#332823;border:1px solid #d6cbc0;text-align:left;display:flex;align-items:center;justify-content:space-between}.font-menu{position:absolute;z-index:10;top:100%;left:0;right:0;background:white;border:1px solid #d6cbc0;border-radius:9px;box-shadow:0 8px 24px #0002;padding:4px}.font-menu button{display:block;width:100%;background:white;color:#332823;text-align:left;padding:10px}.font-menu button:hover,.font-menu button:focus{background:#eee7df}.font-Sacramento{font-family:Sacramento,cursive!important;font-size:25px!important}.font-Asar{font-family:Asar,serif!important;font-size:19px!important} 
+.home{max-width:1100px;margin:30px auto;padding:0 18px}.home h2{font-size:26px}.catalog{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:24px 0}.product{background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 20px #0001;padding:12px;text-align:center}.product img{width:100%;aspect-ratio:1;object-fit:contain;background:#f2eee9;border-radius:10px}.product h3{font-size:16px;margin:12px 0}.product button{width:100%}.sun-preview{position:relative;max-width:520px;margin:auto;aspect-ratio:1;background:#f2eee9;border-radius:14px;overflow:hidden}.sun-preview img,.sun-preview svg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.sun-preview svg{pointer-events:none}#sunError{min-height:22px;color:#a03224}.home.hidden{display:none!important}@media(max-width:760px){.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:390px){.catalog{grid-template-columns:1fr 1fr;gap:8px}.product{padding:7px}.product button{padding:10px 5px;font-size:12px}}
+
+@font-face{font-family:'Cormorant Garamond';src:url('fonts/Cormorant-Garamond.ttf') format('truetype');font-display:swap}@font-face{font-family:'Montserrat';src:url('fonts/Montserrat.ttf') format('truetype');font-display:swap}@font-face{font-family:'Parisienne';src:url('fonts/Parisienne.ttf') format('truetype');font-display:swap}@font-face{font-family:'Playwright PL';src:url('fonts/Playwright-PL.ttf') format('truetype');font-display:swap}@font-face{font-family:'Zilla Slab';src:url('fonts/Zilla-Slab.ttf') format('truetype');font-display:swap}
+.font-Cormorant-Garamond{font-family:'Cormorant Garamond',serif!important}.font-Montserrat{font-family:Montserrat,sans-serif!important}.font-Parisienne{font-family:Parisienne,cursive!important}.font-Playwright-PL{font-family:'Playwright PL',cursive!important}.font-Zilla-Slab{font-family:'Zilla Slab',serif!important}
+#sunOverlay{overflow:visible}.sun-font-picker{position:relative}.sun-font-trigger{width:100%;background:#fff;color:#342a25;border:1px solid #d6cbc0;text-align:left;font-size:23px;padding:12px 14px}.sun-font-menu{position:absolute;top:100%;left:0;right:0;z-index:30;background:#fff;border:1px solid #d6cbc0;border-radius:12px;box-shadow:0 12px 30px #0002;max-height:330px;overflow:auto}.sun-font-menu button{display:block;width:100%;text-align:left;background:#fff;color:#342a25;font-size:23px;padding:13px 16px;border-radius:0;border-bottom:1px solid #eee}.sun-font-menu button:hover,.sun-font-menu button:focus{background:#f2eae2;outline:2px solid #8a7769;outline-offset:-2px}
+
+/* Palette Old Rose 17-1518 TCX : approximation écran, à valider sur iPad. */
+:root{--old-rose:#ad7779;--old-rose-dark:#86565d}
+header{background:var(--old-rose-dark)}
+button:not(.secondary):not(.font-trigger):not(.sun-font-trigger):not(.font-menu button):not(.sun-font-menu button){background:var(--old-rose-dark);color:#fff}
+button:disabled{background:#d8c4c5!important;color:#655b5c!important;opacity:1}
+#sunLine1.invalid,#sunLine2.invalid{border:2px solid #b73545;background:#fff1f2;color:#a62035;outline-color:#b73545}
+#sunError{font-weight:600;line-height:1.5}
+@media(max-width:760px){button{min-height:46px}.catalog{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#backToCatalog{position:relative;display:block;margin:16px auto 0 max(14px,calc((100vw - 1060px)/2));background:#f4e6e8;color:#784650;border:2px solid #b47c87;font-weight:750;font-size:16px;min-height:52px;box-shadow:0 2px 8px #0001}
+#backToCatalog:focus-visible{outline:3px solid #73414c;outline-offset:3px}
+@media(max-width:760px){#backToCatalog{margin:12px 14px 0}}
+
+.checkout-panel{max-width:800px;margin:20px auto;padding:22px;background:white;border-radius:16px;box-shadow:0 4px 22px #0001}.checkout-panel h2{margin-bottom:12px}.checkout-panel .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.checkout-panel .actions button{flex:1;min-width:160px}.cart-line{padding:13px 0;border-bottom:1px solid #e9e0de}.cart-total{font-size:24px;font-weight:750;text-align:right;margin-top:14px}.error-msg{color:#a62035;font-weight:700}.checkout-panel input{margin-bottom:8px}#staffOnly{background:#f9f0ef;padding:12px;border-radius:10px}.checkout-panel button:focus-visible{outline:3px solid #6d454a;outline-offset:3px}
+
+.thanks-success{margin:4px auto 16px;width:68px;height:68px;border-radius:50%;background:#e1f3e6;color:#247344;display:grid;place-items:center;font-size:44px;font-weight:800}.thanks-heading{text-align:center;font-size:27px}.thanks-order-label,.thanks-total-label{text-align:center;font-weight:700;margin-top:26px;font-size:19px}.thanks-order-number{text-align:center;font-size:clamp(34px,7vw,58px);font-weight:850;letter-spacing:.02em;color:#784650}.thanks-total-amount{text-align:center;font-size:clamp(38px,8vw,60px);font-weight:850;color:#784650}.thanks-instruction{text-align:center;font-size:clamp(21px,4vw,28px);font-weight:750;line-height:1.35;margin:25px auto;max-width:620px}.thanks-footnote{text-align:center}
+</style></head><body><header><div><h1>Atelier de gravure</h1><span class="pill">Collection pendentifs · v3.12</span></div><div><button class="secondary" id="clientBtn">Personnaliser</button> <button id="ordersBtn">Espace atelier</button></div></header><button id="backToCatalog" type="button" class="hidden" aria-label="Retour à la liste des pendentifs">← Retour aux pendentifs</button><section id="identity" class="checkout-panel"><h2>Vos coordonnées</h2><p>Dernière étape : renseignez vos coordonnées pour identifier votre commande et faciliter son suivi.</p><label for="buyerLast">Nom *</label><input id="buyerLast" autocomplete="family-name" required><label for="buyerFirst">Prénom *</label><input id="buyerFirst" autocomplete="given-name" required><label for="buyerPhone">Téléphone *</label><input id="buyerPhone" type="tel" autocomplete="tel" inputmode="tel" required><p id="identityError" class="error-msg" role="alert"></p><button id="identityNext" class="wide">Valider ma personnalisation</button><button id="identityBack" class="secondary wide" type="button">← Retour à ma commande</button></section><section id="cartPage" class="checkout-panel hidden"><h2>Votre commande</h2><p>Vérifiez vos pendentifs et leurs inscriptions avant de confirmer.</p><div id="cartItems"></div><div id="cartTotal" class="cart-total"></div><div class="actions"><button class="secondary" id="addPendant">Ajouter un autre pendentif</button><button id="checkoutStart">Passer à l’étape suivante</button></div></section><section id="confirmPage" class="checkout-panel hidden"><h2>Confirmer votre personnalisation</h2><p>Avez-vous vérifié l’orthographe des inscriptions et les modèles choisis ? Souhaitez-vous confirmer définitivement votre personnalisation ?</p><div id="confirmTotal"></div><div class="actions"><button id="confirmBack" class="secondary">Retour à ma commande</button><button id="confirmYes">Oui, je confirme</button></div></section><section id="thanksPage" class="checkout-panel hidden"><div class="thanks-success" aria-hidden="true">✓</div><h2 class="thanks-heading">Merci pour votre personnalisation !</h2><div class="thanks-order-label">Votre commande</div><div id="thanksOrderNumber" class="thanks-order-number"></div><div class="thanks-total-label">Total à régler</div><div id="thanksTotalAmount" class="thanks-total-amount"></div><p class="thanks-instruction">Veuillez attendre un membre de notre équipe pour le règlement et la validation de votre gravure.</p><p class="hint thanks-footnote">Votre commande sera confirmée et la gravure réalisée uniquement après réception du paiement.</p><button id="freshStart" class="wide">Nouvelle personnalisation</button></section><section id="home" class="home hidden"><h2>Choisissez votre pendentif</h2><p>Chaque finition est un modèle distinct. Sélectionnez celui que vous souhaitez personnaliser.</p><div class="catalog" id="catalog"></div></section><main id="workspace" class="hidden"><section class="panel" id="editor"><h2>Aperçu de votre médaillon</h2><div class="preview"><svg id="stage" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg"><image href="assets/medaillon-verso.png" width="400" height="400" preserveAspectRatio="xMidYMid meet"/><g id="guides"></g><g id="texts"></g></svg></div></section><section class="panel" id="settings"><h2>Votre personnalisation</h2><label for="count">Nombre de textes</label><select id="count"><option value="1">1 texte</option><option value="2" selected>2 textes</option><option value="3">3 textes</option></select><label for="roundFontTrigger">Police commune à tous les textes</label><div id="roundFontPicker" class="sun-font-picker"><button type="button" id="roundFontTrigger" class="sun-font-trigger" aria-haspopup="listbox" aria-expanded="false">Intemporelle ▾</button><div id="roundFontMenu" class="sun-font-menu hidden" role="listbox" aria-label="Choisir la police du médaillon rond"></div></div><div id="fields"></div><p id="roundGapInfo" class="hint" aria-live="polite"></p><button class="wide" id="save">Ajouter ce pendentif à ma commande</button><p class="hint">Présentez votre numéro de commande au stand et réglez sur place. La gravure ne commence qu'après confirmation du paiement.</p><div id="result" aria-live="polite"></div></section><section class="panel hidden" id="sunEditor"><h2>Aperçu — dos lisse du Soleil</h2><div class="sun-preview" id="sunPreview"><img id="sunImage" alt="Pendentif Soleil, face lisse"><svg id="sunOverlay" viewBox="0 0 400 400" aria-label="Aperçu des textes à graver"><circle id="sunGuide" cx="196.3" cy="208" r="52" fill="none" stroke="#207c80" stroke-width="1.3" stroke-dasharray="3 4"/><g id="sunText"></g></svg></div><p class="hint">Le cercle pointillé indique la zone gravable calibrée de 10 mm. Seul le dos lisse est gravé ; la face texturée ne l'est jamais.</p></section><section class="panel hidden" id="sunSettings"><h2>Gravure du Soleil</h2><label for="sunFont">Police commune aux deux lignes</label><div id="sunFontPicker" class="sun-font-picker"><button type="button" id="sunFontTrigger" class="sun-font-trigger" aria-haspopup="listbox" aria-expanded="false">Intemporelle ▾</button><div id="sunFontMenu" class="sun-font-menu hidden" role="listbox" aria-label="Choisir la police"><button type="button" role="option" data-font="Cormorant Garamond" style="font-family:'Cormorant Garamond',serif">Intemporelle</button><button type="button" role="option" data-font="Montserrat" style="font-family:Montserrat,sans-serif">Classique</button><button type="button" role="option" data-font="Parisienne" style="font-family:Parisienne,cursive">Élégante</button><button type="button" role="option" data-font="Playwright PL" style="font-family:'Playwright PL',cursive">Écolier</button><button type="button" role="option" data-font="Zilla Slab" style="font-family:'Zilla Slab',serif">Machine à écrire</button></div><input type="hidden" id="sunFont" value="Cormorant Garamond"></div><label for="sunLine1">Première ligne</label><input id="sunLine1" maxlength="80" placeholder="Prénom"><label for="sunLine2">Deuxième ligne (facultative)</label><input id="sunLine2" maxlength="80" placeholder="Date ou prénom"><p class="hint">Hauteur de référence : 2,5 mm. Les textes courts peuvent être agrandis. Vous pouvez écrire librement : une ligne trop longue apparaît en rouge et empêche la validation. En mode deux lignes, les deux lignes sont vérifiées indépendamment avec la même limite géométrique.</p><div id="sunError" role="status" class="hint"></div><button class="wide" id="sunSave">Ajouter ce pendentif à ma commande</button><div id="sunResult" aria-live="polite"></div></section><section id="orders" class="hidden"><div class="panel"><h2>Espace atelier — commandes locales</h2><p class="warning">Les commandes sont stockées uniquement sur cet appareil et dans ce navigateur. Sauvegardez le fichier JSON régulièrement. Les SVG sont exportables sans validation de paiement : vérifiez le règlement sur votre feuille de suivi avant toute gravure. Le code atelier est une protection de démonstration, pas une sécurité réelle.</p><div id="login"><label for="pin">Code atelier (protection locale de démonstration)</label><input type="password" id="pin" placeholder="Code atelier"><button class="wide" id="unlock">Ouvrir l'atelier</button><p class="hint">Code de test : 2468. À remplacer par une véritable authentification côté serveur avant publication.</p></div><div id="atelier" class="hidden"><button id="backup" class="secondary">Sauvegarder les commandes (JSON)</button>
+<div class="restore-panel" style="margin:16px 0;padding:14px;border:1px solid #d5c4c1;border-radius:12px">
+<h3>Restaurer une sauvegarde</h3><p class="hint">Importe un fichier JSON exporté depuis cette application. Les commandes déjà présentes sont conservées ; aucun doublon n’est ajouté.</p>
+<input type="file" id="restoreFile" accept=".json,application/json"><button id="restore" class="secondary">Restaurer les commandes</button><p id="restoreStatus" role="status"></p>
+</div>
+<div class="sync-panel" style="margin:16px 0;padding:14px;border:1px solid #d5c4c1;border-radius:12px">
+<h3>Transfert vers le Mac — essai réseau local</h3>
+<p class="hint">Sur le Mac, démarrez le récepteur fourni dans le dossier « Mac — réception ». Renseignez son adresse Wi-Fi et son code. L’application essaie ensuite d’envoyer les commandes en attente, sans supprimer les copies sur l’iPad. Ce transfert dépend des autorisations réseau de Safari et doit être testé.</p>
+<label for="macUrl">Adresse du Mac (ex. http://192.168.1.20:8765)</label><input id="macUrl" type="url" placeholder="http://192.168.1.20:8765" autocomplete="off">
+<label for="macToken">Code secret de réception</label><input id="macToken" type="password" autocomplete="off" placeholder="Code affiché sur le Mac">
+<button id="saveSyncSettings" class="secondary">Enregistrer les réglages</button><button id="syncNow" class="secondary">Envoyer les commandes au Mac</button>
+<p id="syncStatus" role="status" class="hint"></p>
+</div><div id="orderList"></div></div></div></section></main><script src="glyphs.js"></script><script>
+const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';
+// Repères mesurés sur la photo 800×800, ramenés à la prévisualisation 400×400.
+// Le centre du trou n'est pas exactement au centre géométrique du bijou.
+const HOLE_X=188,HOLE_Y=207.5,HOLE_R=45.5;let count=2,items=[];let roundFont='Cormorant Garamond';
+const ROUND_MIN_GAP_MM=0.8; // espace libre minimal entre les trois inscriptions
+
+function download(name,data,type){const a=document.createElement('a'),url=URL.createObjectURL(new Blob([data],{type}));a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),3000)}
+function getOrders(){try{return JSON.parse(localStorage.getItem('monmedaillon-orders-v07')||'[]')}catch{return []}}
+function putOrders(x){localStorage.setItem('monmedaillon-orders-v07',JSON.stringify(x))}
+function mk(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);parent.append(e);return e}
+function angularWidth(t){
+  const font=window.MEDAILLON_GLYPHS?.[t.font];
+  if(!font)return 0;
+  const advance=Array.from(t.text||'Votre texte').reduce((sum,c)=>sum+(font.glyphs[c]?.[1]||font.upm*.6)/font.upm,0)*t.size;
+  return advance/4.05;
+}
+function distributeSectors(){
+  if(count!==3)return;
+  // Écart angulaire identique entre la fin d'un prénom et le début du suivant.
+  // La taille est commune; les centres peuvent donc se déplacer selon la longueur.
+  const spans=items.map(angularWidth);
+  const gap=(2*Math.PI-spans.reduce((a,b)=>a+b,0))/3;
+  // Le premier prénom reste centré en haut. Parcours dans le sens horaire.
+  let angle=-Math.PI/2+spans[0]/2;
+  items.forEach((t,i)=>{
+    t.sector=(angle+spans[i]/2)*180/Math.PI;
+    angle+=spans[i]+gap;
+  });
+}
+function layout(){
+  const configs=count===1
+    ?[{x:HOLE_X,y:HOLE_Y-108,style:'radial',rotation:0,sector:-90}]
+    :count===2
+    ?[{x:HOLE_X,y:HOLE_Y-108,style:'radial',rotation:0,sector:-90},
+      {x:HOLE_X,y:HOLE_Y+108,style:'radial',rotation:0,sector:90}]
+    :[{x:HOLE_X,y:HOLE_Y-108,style:'radial',rotation:0,sector:-90},
+      {x:HOLE_X+94,y:HOLE_Y+54,style:'radial',rotation:0,sector:30},
+      {x:HOLE_X-94,y:HOLE_Y+54,style:'radial',rotation:0,sector:150}];
+  items=items.slice(0,count);
+  while(items.length<count)items.push({text:'',font:roundFont});
+  items.forEach(t=>t.font=roundFont);
+  items.forEach((t,i)=>Object.assign(t,configs[i],{id:i+1,curve:100}));
+  fitAll();
+}
+function fitAll(){
+  // Une seule taille de caractères pour tous les textes : celle que permet
+  // le prénom le plus long, sans jamais agrandir les prénoms courts.
+  const maxWidth=count===3?8.45:10.45;
+  let common=count===3?4.65:5.85;
+  for(const t of items){
+    const font=window.MEDAILLON_GLYPHS?.[t.font];
+    if(!font){common=Math.min(common,1.2);continue}
+    let advance=0;
+    for(const c of Array.from(t.text||'Votre texte'))
+      advance+=(font.glyphs[c]?.[1]||font.upm*.6)/font.upm;
+    common=Math.min(common,maxWidth/Math.max(advance,.2));
+  }
+  common=Math.max(.38,Math.min(count===3?4.65:5.85,common));
+  // La largeur seule ne suffit pas : vérifier les contours réels des glyphes
+  // (boucles de Sacramento, accents d'Asar) avant de fixer la taille commune.
+  // Recherche de la plus grande taille qui reste dans l'anneau utile.
+  let low=.32, high=common;
+  for(let iteration=0;iteration<23;iteration++){
+    const candidate=(low+high)/2;
+    const safeGap=count!==3 || (items.reduce((sum,t)=>{
+      const font=window.MEDAILLON_GLYPHS?.[t.font];
+      if(!font)return Infinity;
+      const units=Array.from(t.text||'Votre texte').reduce((v,ch)=>v+(font.glyphs[ch]?.[1]||font.upm*.6),0);
+      return sum+units/font.upm*candidate/4.05;
+    },0)+3*ROUND_MIN_GAP_MM/4.05 <= 2*Math.PI);
+    if(safeGap && items.every(t=>radialInkFits(t,candidate)))low=candidate;
+    else high=candidate;
+  }
+  common=low;
+  items.forEach(t=>t.size=common);
+  // Le tracé à un/deux textes est calculé directement autour du trou,
+  // avec un rayon de ligne de base identique en haut et en bas afin de
+  // centrer la hauteur visible des caractères dans la bande métallique.
+  // Les trois textes gardent exactement leur algorithme validé.
+  if(count!==3){
+    items[0].y=HOLE_Y-4.55*400/16.5;
+    if(count===2)items[1].y=HOLE_Y+4.55*400/16.5;
+  }
+  distributeSectors();
+}
+const FONT_LABELS={'Cormorant Garamond':'Intemporelle','Montserrat':'Classique','Parisienne':'Élégante','Playwright PL':'Écolier','Zilla Slab':'Machine à écrire'};
+const ROUND_FONTS=['Cormorant Garamond','Montserrat','Parisienne','Playwright PL','Zilla Slab'];
+function updateRoundFontPicker(){
+  const btn=$('roundFontTrigger');
+  btn.textContent=(FONT_LABELS[roundFont]||roundFont)+'  ▾';
+  btn.style.fontFamily='"'+roundFont+'"';
+  $('roundFontMenu').querySelectorAll('[data-font]').forEach(el=>el.setAttribute('aria-selected',String(el.dataset.font===roundFont)));
+}
+function initRoundFontPicker(){
+  const menu=$('roundFontMenu');menu.replaceChildren();
+  ROUND_FONTS.forEach(font=>{
+    const btn=document.createElement('button');btn.type='button';btn.setAttribute('role','option');btn.dataset.font=font;
+    btn.textContent=FONT_LABELS[font];btn.style.fontFamily='"'+font+'"';
+    btn.onclick=()=>{
+      roundFont=font;items.forEach(t=>t.font=font);
+      menu.classList.add('hidden');$('roundFontTrigger').setAttribute('aria-expanded','false');
+      updateRoundFontPicker();fitAll();render();
+    };menu.append(btn);
+  });
+  $('roundFontTrigger').onclick=()=>{
+    const isClosed=menu.classList.toggle('hidden');
+    $('roundFontTrigger').setAttribute('aria-expanded',String(!isClosed));
+  };
+  document.addEventListener('click',e=>{
+    if(!$('roundFontPicker').contains(e.target)){
+      menu.classList.add('hidden');$('roundFontTrigger').setAttribute('aria-expanded','false');
+    }
+  });
+  updateRoundFontPicker();
+}
+function fields(){
+  const f=$('fields');f.replaceChildren();
+  items.forEach((t,i)=>{
+    const d=document.createElement('div');d.className='field';
+    const lab=document.createElement('label');lab.textContent='Texte '+(i+1);d.append(lab);
+    const inp=document.createElement('input');inp.maxLength=40;inp.placeholder='Votre texte';inp.value=t.text;
+    inp.setAttribute('aria-label','Texte '+(i+1));
+    inp.addEventListener('input',()=>{t.text=inp.value;fitAll();render()});d.append(inp);
+    f.append(d);
+  });
+  updateRoundFontPicker();
+}
+document.addEventListener('click',e=>{document.querySelectorAll('.font-picker').forEach(p=>{if(!p.contains(e.target)){p.querySelector('.font-menu').classList.add('hidden');p.querySelector('.font-trigger').setAttribute('aria-expanded','false')}})});
+// Mesure des contours SVG réels, partagée entre aperçu et export atelier.
+const inkBoundsCache=new Map();
+function visibleGlyphBounds(fontName,char,d){
+  const key=fontName+'|'+char;
+  if(inkBoundsCache.has(key))return inkBoundsCache.get(key);
+  const svg=document.createElementNS(NS,'svg');
+  svg.setAttribute('width','0');svg.setAttribute('height','0');
+  svg.style.cssText='position:absolute;visibility:hidden;overflow:visible;pointer-events:none';
+  const path=document.createElementNS(NS,'path');path.setAttribute('d',d);
+  svg.append(path);document.body.append(svg);
+  let b;
+  try{const r=path.getBBox();b={x:r.x,y:r.y,width:r.width,height:r.height}}
+  catch{b={x:0,y:-500,width:500,height:700}}
+  svg.remove();inkBoundsCache.set(key,b);return b;
+}
+// Contrôle de sécurité sur les contours de CHAQUE glyphe, après courbure et
+// rotation. Les quatre coins de leur boîte visible donnent une enveloppe
+// prudente, indépendante du nombre de lettres ou de la police.
+function radialInkFits(t,size){
+  const font=window.MEDAILLON_GLYPHS?.[t.font];
+  if(!font)return false;
+  const chars=Array.from(t.text||'Votre texte');
+  const scale=size/font.upm, r=4.05;
+  const glyphs=chars.map(c=>font.glyphs[c]);
+  const adv=glyphs.map(g=>(g?.[1]||font.upm*.6)*scale);
+  const total=adv.reduce((a,b)=>a+b,0);
+  let inkLeft=Infinity,inkRight=-Infinity,cursor=0;
+  glyphs.forEach((g,i)=>{
+    if(g?.[0]){
+      const b=visibleGlyphBounds(t.font,chars[i],g[0]);
+      inkLeft=Math.min(inkLeft,cursor+b.x*scale);
+      inkRight=Math.max(inkRight,cursor+(b.x+b.width)*scale);
+    }
+    cursor+=adv[i];
+  });
+  cursor=-(Number.isFinite(inkLeft)?(inkLeft+inkRight)/2:total/2);
+  const base=(t.sector||0)*Math.PI/180;
+  // Limites prudentes : bord irrégulier de la rondelle et trou central.
+  const outer=6.12,inner=2.12;
+  for(let i=0;i<glyphs.length;i++){
+    const g=glyphs[i],w=adv[i],offset=cursor+w/2;
+    cursor+=w;
+    if(!g?.[0])continue;
+    const b=visibleGlyphBounds(t.font,chars[i],g[0]);
+    const angle=base+offset/r,rot=angle+Math.PI/2;
+    const px=r*Math.cos(angle),py=r*Math.sin(angle);
+    for(const x0 of [b.x,b.x+b.width])for(const y0 of [b.y,b.y+b.height]){
+      const lx=x0*scale-w/2,ly=-y0*scale;
+      const x=px+lx*Math.cos(rot)-ly*Math.sin(rot);
+      const y=py+lx*Math.sin(rot)+ly*Math.cos(rot);
+      const distance=Math.hypot(x,y);
+      if(distance>outer||distance<inner)return false;
+    }
+  }
+  return true;
+}
+function glyphPaths(t){
+  const font=window.MEDAILLON_GLYPHS?.[t.font];
+  if(!font)throw Error('La police '+t.font+' n’est pas encore disponible en tracés. Vérifie les fichiers de police du projet.');
+  const glyphs=Array.from(t.text).map(c=>{const g=font.glyphs[c];if(!g)throw Error('Caractère non pris en charge : '+c);return g});
+  // Moteur radial commun aux 1, 2 et 3 textes : les pieds des lettres pointent vers le trou.
+  // On calcule les points directement dans le repère millimétrique du SVG exporté.
+  if(t.style==='radial'){
+    const scale=t.size/font.upm;
+    const adv=glyphs.map(g=>g[1]*scale);
+    const total=adv.reduce((a,b)=>a+b,0);
+    const cx=(HOLE_X-200)*17/400,cy=(HOLE_Y-200)*16.5/400;
+    // Rayon de la ligne de base, commun aux trois secteurs.
+    // Milieu de la bande métallique : trou ~1,93 mm de rayon,
+    // contour extérieur ~6,6 mm depuis le centre du trou.
+    // La ligne de base est légèrement décalée vers le trou pour tenir
+    // compte de la hauteur visible des lettres.
+    const r=4.05;
+    const start=(t.sector||0)*Math.PI/180;
+    // Sacramento possède des attaques et des boucles qui dépassent
+    // les largeurs d'avance. Centrer le contour visible du mot entier,
+    // et non uniquement la somme des avances typographiques.
+    let inkLeft=Infinity, inkRight=-Infinity, advanceCursor=0;
+    for(let i=0;i<glyphs.length;i++){
+      const [d]=glyphs[i];
+      if(d){
+        const b=visibleGlyphBounds(t.font,Array.from(t.text)[i],d);
+        inkLeft=Math.min(inkLeft,advanceCursor+b.x*scale);
+        inkRight=Math.max(inkRight,advanceCursor+(b.x+b.width)*scale);
+      }
+      advanceCursor+=adv[i];
+    }
+    const inkMid=Number.isFinite(inkLeft)?(inkLeft+inkRight)/2:total/2;
+    let cursor=-inkMid;
+    const paths=[];
+    for(let i=0;i<glyphs.length;i++){
+      const [d]=glyphs[i],w=adv[i],offset=cursor+w/2;
+      if(d){
+        const angle=start+offset/r;
+        const x=cx+r*Math.cos(angle),y=cy+r*Math.sin(angle);
+        // La tangente tourne avec le secteur : les lettres épousent le trou.
+        const deg=angle*180/Math.PI+90;
+        paths.push(`<g transform="translate(${x.toFixed(5)} ${y.toFixed(5)}) rotate(${deg.toFixed(5)}) translate(${(-w/2).toFixed(5)} 0) scale(${scale.toFixed(8)} ${(-scale).toFixed(8)})"><path d="${d}"/></g>`);
+      }
+      cursor+=w;
+    }
+    return `<g>${paths.join('')}</g>`;
+  }
+  // Ancien moteur non radial conservé uniquement pour compatibilité historique.
+  // La ligne de base suit deux arcs miroirs. Le centre d'encre du mot entier
+  // est placé sur le même rayon pour les deux, sans déplacement lettre par lettre.
+  // v2.5 : reprendre strictement le pas angulaire et le rayon de la v2.3
+  // pour les DEUX inscriptions. Seule l'orientation de l'arc inférieur
+  // est inversée pour conserver une lecture gauche-droite.
+  if(count!==3){
+    const scale=t.size/font.upm;
+    const advances=glyphs.map(g=>g[1]*scale);
+    const total=advances.reduce((a,b)=>a+b,0);
+    const cx=(HOLE_X-200)*17/400,cy=(HOLE_Y-200)*16.5/400;
+    const radius=4.05; // EXACTEMENT le rayon du moteur 3 textes.
+    const top=t.id===1;
+    const baseAngle=top?-Math.PI/2:Math.PI/2;
+    let cursor=-total/2;
+    const paths=[];
+    for(let i=0;i<glyphs.length;i++){
+      const [d]=glyphs[i],w=advances[i],offset=cursor+w/2;
+      if(d){
+        const angle=baseAngle+(top?1:-1)*offset/radius;
+        const x=cx+radius*Math.cos(angle),y=cy+radius*Math.sin(angle);
+        const deg=angle*180/Math.PI+(top?90:-90);
+        paths.push(`<g transform="translate(${x.toFixed(5)} ${y.toFixed(5)}) rotate(${deg.toFixed(5)}) translate(${(-w/2).toFixed(5)} 0) scale(${scale.toFixed(8)} ${(-scale).toFixed(8)})"><path d="${d}"/></g>`);
+      }
+      cursor+=w;
+    }
+    return `<g>${paths.join('')}</g>`;
+  }
+  const upm=font.upm, scale=t.size/upm, tracking=0;
+  const advances=glyphs.map(g=>g[1]*scale+tracking);
+  const total=advances.reduce((a,b)=>a+b,0);
+  let cursor=-total/2, paths=[];
+  const curved=t.style!=='straight' && t.curve>0;
+  // Rayon exprimé en millimètres, borné pour les petites pièces.
+  const radius=curved?(count===3?18/(1+t.curve/50):4.25):0;
+  for(let i=0;i<glyphs.length;i++){
+    const [d]=glyphs[i],adv=advances[i],middle=cursor+adv/2;
+    if(d){
+      let px=middle,py=0,rot=0;
+      if(curved){
+        const theta=middle/radius;
+        px=radius*Math.sin(theta);
+        py=(t.style==='top'?-1:1)*radius*(1-Math.cos(theta));
+        rot=(t.style==='top'?-1:1)*theta*180/Math.PI;
+      }
+      // Les glyphes TTF ont l’axe vertical ascendant : inversion Y.
+      paths.push(`<g transform="translate(${px.toFixed(5)} ${py.toFixed(5)}) rotate(${rot.toFixed(5)}) translate(${(-adv/2).toFixed(5)} 0) scale(${scale.toFixed(8)} ${(-scale).toFixed(8)})"><path d="${d}"/></g>`);
+    }
+    cursor+=adv;
+  }
+  const x=(t.x-200)*17/400,y=(t.y-200)*16.5/400;
+  return `<g transform="translate(${x.toFixed(5)} ${y.toFixed(5)}) rotate(${t.rotation})">${paths.join('')}</g>`;
+}
+function buildSvg(list){
+  if(!list.length || list.some(t=>!t.text.trim()))throw Error('Ajoute au moins un texte non vide.');
+  const parts=list.map(glyphPaths).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="17mm" height="16.5mm" viewBox="-8.5 -8.25 17 16.5"><title>Mon Médaillon 001 - gravure en tracés</title><desc>Uniquement les lettres à graver. Vérifier position et dimensions avant toute gravure.</desc><g fill="#000" stroke="none">${parts}</g></svg>`;
+}
+
+function render(){
+  const grp=$('texts'),guides=$('guides');grp.replaceChildren();guides.replaceChildren();
+  // Guide exactement superposé au trou de la photo, uniquement dans l'aperçu.
+  mk('circle',{cx:HOLE_X,cy:HOLE_Y,r:HOLE_R,fill:'none',stroke:'#0b9297',
+    'stroke-dasharray':'3 5','stroke-width':1.2},guides);
+  let problems=[];
+  items.forEach(t=>{
+    try{
+      const g=mk('g',{transform:'translate(200 200) scale('+(400/17)+' '+(400/16.5)+')',fill:'#332823'},grp);
+      g.innerHTML=glyphPaths({...t,text:t.text||'Votre texte'});
+      // getBBox() du groupe intérieur est en millimètres, sans la transformation de l'aperçu.
+      const inner=g.firstElementChild;
+      if(t.text && inner){
+        const b=inner.getBBox();
+        const hx=(HOLE_X-200)*17/400,hy=(HOLE_Y-200)*16.5/400;
+        const nx=Math.max(b.x,Math.min(hx,b.x+b.width));
+        const ny=Math.max(b.y,Math.min(hy,b.y+b.height));
+        if(Math.hypot(nx-hx,ny-hy)<1.8+0.25)problems.push('Un texte risque de toucher le trou.');
+      }
+    }catch(e){problems.push(e.message)}
+  });
+  // Indication discrète lorsque trois inscriptions ne peuvent conserver la taille de référence.
+  const note=$('roundGapInfo');
+  if(note)note.textContent=count===3 && items.some(t=>t.text.trim()) && items[0].size<2.5
+    ? 'Trois textes : la taille a été réduite pour conserver un espace entre les inscriptions. Vérifiez la lisibilité avant gravure.' : '';
+  // Les avertissements visuels historiques ont été retirés à la demande.
+}
+function exportSvg(list,name){try{download(name,buildSvg(list),'image/svg+xml')}catch(e){alert('Export impossible : '+e.message)}}
+$('count').onchange=e=>{count=Number(e.target.value);layout();fields();render()};$('save').onclick=()=>{if(items.some(t=>!t.text.trim())){alert('Remplissez tous les textes.');return}try{buildSvg(items)}catch(e){alert('Texte incompatible avec la police : '+e.message);return}const id='M'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).slice(2,5).toUpperCase();const arr=getOrders();arr.push({id,created:new Date().toISOString(),customer:$('customer').value,items:JSON.parse(JSON.stringify(items)),paid:false});try{putOrders(arr);$('result').textContent='Commande '+id+' enregistrée sur cet appareil uniquement. Présentez ce numéro au stand.'}catch(e){alert('Enregistrement impossible : '+e.message)}};
+$('clientBtn').onclick=()=>{$('editor').classList.remove('hidden');$('settings').classList.remove('hidden');$('orders').classList.add('hidden')};$('ordersBtn').onclick=()=>{$('editor').classList.add('hidden');$('settings').classList.add('hidden');$('orders').classList.remove('hidden')};$('unlock').onclick=()=>{if($('pin').value!=='2468'){alert('Code incorrect');return}$('login').classList.add('hidden');$('atelier').classList.remove('hidden');showOrders()};
+function showOrders(){const p=$('orderList');p.replaceChildren();const arr=getOrders();if(!arr.length){p.textContent='Aucune commande locale.';return}arr.slice().reverse().forEach(o=>{const d=document.createElement('div');d.className='order';const title=document.createElement('strong');title.textContent=o.id+' — '+(o.customer||'Client')+' — '+(o.paid?'Payée':'En attente de paiement');d.append(title);const desc=document.createElement('p');desc.textContent=o.items.map(t=>t.text).join(' / ');d.append(desc);const paid=document.createElement('button');paid.className='secondary';paid.textContent=o.paid?'Annuler le paiement':'Marquer comme payée';paid.onclick=()=>{const all=getOrders();const x=all.find(x=>x.id===o.id);if(x){x.paid=!x.paid;putOrders(all);showOrders()}};d.append(paid);const svg=document.createElement('button');svg.textContent='Exporter SVG xTool';svg.disabled=!o.paid;svg.onclick=()=>exportSvg(o.items,o.id+'-xtool.svg');d.append(svg);p.append(d)})}
+$('backup').onclick=()=>download('commandes-medaillon-v08.json',JSON.stringify(getOrders(),null,2),'application/json');initRoundFontPicker();layout();fields();render();
+
+// Choix explicite du produit : aucune finition implicite.
+const PRODUCTS=[
+ {id:'medaille-argent',name:'Médaillon rond argenté',kind:'medal',image:'assets/medaillon-argent.png'},
+ {id:'soleil-or',name:'Soleil doré',kind:'sun',image:'assets/soleil-dore-arriere.png',cover:'assets/soleil-dore-avant.jpg'},
+ {id:'soleil-argent',name:'Soleil argenté',kind:'sun',image:'assets/soleil-argente-arriere.png',cover:'assets/soleil-argente-avant.png'}
+];
+let selectedProduct=null;
+PRODUCTS.forEach(p=>{
+ const card=document.createElement('article');card.className='product';
+ const img=document.createElement('img');img.src=p.cover||p.image;img.alt=p.name;card.append(img);
+ const title=document.createElement('h3');title.textContent=p.name;card.append(title);const price=document.createElement('p');price.textContent=(p.id==='medaille-argent'?'28':'35')+' €';card.append(price);
+ const btn=document.createElement('button');btn.textContent='Personnaliser';btn.onclick=()=>chooseProduct(p.id);card.append(btn);$('catalog').append(card);
+});
+function chooseProduct(id){
+ selectedProduct=PRODUCTS.find(p=>p.id===id);
+ $('home').classList.add('hidden');$('workspace').classList.remove('hidden');$('orders').classList.add('hidden');
+ const sun=selectedProduct.kind==='sun';
+ for(const x of ['editor','settings'])$(x).classList.toggle('hidden',sun);
+ for(const x of ['sunEditor','sunSettings'])$(x).classList.toggle('hidden',!sun);
+ if(sun){$('sunImage').src=selectedProduct.image;renderSun()}else{$('stage').querySelector('image').setAttribute('href',selectedProduct.image);render()}
+ $('clientBtn').textContent='Changer de pendentif';$('backToCatalog').classList.remove('hidden');
+}
+function returnToCatalog(){$('home').classList.remove('hidden');$('workspace').classList.add('hidden');$('orders').classList.add('hidden');$('backToCatalog').classList.add('hidden');} $('clientBtn').onclick=returnToCatalog;$('backToCatalog').onclick=returnToCatalog;
+$('ordersBtn').onclick=()=>{$('backToCatalog').classList.add('hidden');$('home').classList.add('hidden');$('workspace').classList.remove('hidden');for(const x of ['editor','settings','sunEditor','sunSettings'])$(x).classList.add('hidden');$('orders').classList.remove('hidden')};
+// Calibrage à partir des cercles tracés sur les PSD (aperçus de 600 x 600).
+// Les images définitives ont le même cadrage carré, 887 x 887.
+const SUN_CALIBRATION={
+ 'soleil-or':{cx:294.5,cy:312.0,r:78.0},
+ 'soleil-argent':{cx:294.5,cy:313.5,r:79.0}
+};
+function sunCalibration(){
+ const c=SUN_CALIBRATION[selectedProduct?.id]||SUN_CALIBRATION['soleil-or'];
+ const k=400/600;return {cx:c.cx*k,cy:c.cy*k,r:c.r*k,pxPerMm:c.r*k/5};
+}
+function sunFontPx(ctx,font,pxPerMm){
+ // Taille identique pour tous les mots d'une même police :
+ // calibrée une fois sur les contours d'une chaîne de référence.
+ ctx.font='100px "'+font+'"';
+ const m=ctx.measureText('HÉgj');
+ const h=(m.actualBoundingBoxAscent||72)+(m.actualBoundingBoxDescent||23);
+ return 2.5*pxPerMm*100/h;
+}
+// Choix de police lisible dans sa propre typographie, y compris avant sélection.
+const SUN_FONT_LABELS={'Cormorant Garamond':'Intemporelle','Montserrat':'Classique','Parisienne':'Élégante','Playwright PL':'Écolier','Zilla Slab':'Machine à écrire'};
+function updateSunFontTrigger(){const font=$('sunFont').value,btn=$('sunFontTrigger');btn.textContent=SUN_FONT_LABELS[font]+'  ▾';btn.style.fontFamily='"'+font+'"';$('sunFontMenu').querySelectorAll('[data-font]').forEach(el=>el.setAttribute('aria-selected',String(el.dataset.font===font)))}
+$('sunFontTrigger').onclick=()=>{const m=$('sunFontMenu'),open=m.classList.toggle('hidden')===false;$('sunFontTrigger').setAttribute('aria-expanded',String(open))};
+$('sunFontMenu').querySelectorAll('[data-font]').forEach(btn=>btn.onclick=()=>{$('sunFont').value=btn.dataset.font;$('sunFontMenu').classList.add('hidden');$('sunFontTrigger').setAttribute('aria-expanded','false');updateSunFontTrigger();renderSun()});
+document.addEventListener('click',e=>{if(!$('sunFontPicker').contains(e.target)){$('sunFontMenu').classList.add('hidden');$('sunFontTrigger').setAttribute('aria-expanded','false')}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('sunFontMenu').classList.add('hidden');$('sunFontTrigger').setAttribute('aria-expanded','false')}});
+updateSunFontTrigger();
+function sunGeometry(linesOverride,forceBase=false){
+ const font=$('sunFont').value,c=sunCalibration();
+ const lines=linesOverride||[$('sunLine1').value.trim(),$('sunLine2').value.trim()];
+ const ctx=document.createElement('canvas').getContext('2d');
+ const base=sunFontPx(ctx,font,c.pxPerMm),two=!!lines[1];
+ const active=two?lines:[lines[0]];
+ // Deux lignes : rapprochement mesuré des centres (2,8 mm au lieu de 3,05 mm).
+ // Les glyphes restent à 2,5 mm de hauteur cible ; davantage de largeur est
+ // disponible dans le disque, sans augmenter le diamètre physique de gravure.
+ const spacing=2.8*c.pxPerMm,safeR=c.r-0.8;
+ // Les positions sont les CENTRES VISUELS des lignes, pas leurs lignes de base.
+ const centerYs=two?[c.cy-spacing/2,c.cy+spacing/2]:[c.cy];
+ function measure(size){
+  ctx.font=size+'px "'+font+'"';ctx.textAlign='center';
+  return active.map((txt,i)=>{
+   const m=ctx.measureText(txt||'H'), left=txt?(m.actualBoundingBoxLeft??m.width/2):0;
+   const right=txt?(m.actualBoundingBoxRight??m.width/2):0;
+   const ascent=m.actualBoundingBoxAscent||size*.75,descent=m.actualBoundingBoxDescent||0;
+   // SVG text-anchor middle uses advance width, while ink bounds may be asymmetric.
+   const inkShift=(right-left)/2;
+   const y=centerYs[i]+(ascent-descent)/2;
+   return {txt,x:c.cx-inkShift,y,left,right,ascent,descent,size,centerY:centerYs[i]};
+  });
+ }
+ function lineOutside(o,atCenter){
+  if(!o.txt)return false;
+  // Test des coins de la boîte d'encre contre le disque. Une marge de sécurité
+  // de 0,8 px conserve un retrait près de la limite.
+  const dxs=[-o.left,o.right].map(dx=>dx+(o.x-c.cx));
+  const ownCenter=o.centerY;
+  const dys=[-o.ascent,o.descent].map(dy=>dy+(o.y-ownCenter));
+  return dxs.some(dx=>dys.some(dy=>Math.hypot(dx,(atCenter-c.cy)+dy)>safeR));
+ }
+ function flags(out){
+  // En mode deux lignes, la même capacité est autorisée en haut et en bas :
+  // on vérifie chaque mot aux deux emplacements possibles, sans lier les saisies.
+  return out.map(o=>o.txt&&(two?centerYs.some(cy=>lineOutside(o,cy)):lineOutside(o,c.cy)));
+ }
+ let size=base;
+ if(!forceBase&&!two&&lines[0]&&!flags(measure(base))[0]){
+  let low=base,high=base*2.5;
+  for(let i=0;i<22;i++){const mid=(low+high)/2;if(flags(measure(mid))[0])high=mid;else low=mid}
+  size=low;
+ }
+ const out=measure(size),invalid=flags(out);
+ return {font,size,out,invalid,bad:invalid.some(Boolean),c};
+}
+function renderSun(){
+ const g=$('sunText');g.replaceChildren();const geo=sunGeometry();
+ const guide=$('sunGuide');for(const [k,v] of Object.entries({cx:geo.c.cx,cy:geo.c.cy,r:geo.c.r}))guide.setAttribute(k,v);
+ for(const o of geo.out){if(!o.txt)continue;const el=mk('text',{x:o.x,y:o.y,'text-anchor':'middle','dominant-baseline':'alphabetic','font-family':geo.font,'font-size':geo.size,fill:'#302722'},g);el.textContent=o.txt}
+ const invalid=geo.invalid;
+ $('sunLine1').classList.toggle('invalid',!!invalid[0]);
+ $('sunLine2').classList.toggle('invalid',!!invalid[1]);
+ $('sunLine1').setAttribute('aria-invalid',String(!!invalid[0]));
+ $('sunLine2').setAttribute('aria-invalid',String(!!invalid[1]));
+ $('sunError').textContent=geo.bad?'Texte trop long : raccourcissez '+(invalid[0]&&invalid[1]?'les deux lignes':invalid[0]?'la première ligne':'la deuxième ligne')+' pour rester dans la zone gravable.':'';
+ $('sunSave').disabled=geo.bad||!$('sunLine1').value.trim();
+}
+// La saisie reste toujours modifiable, même en cas de dépassement ou de changement de police.
+for(const id of ['sunLine1','sunLine2'])$(id).addEventListener('input',renderSun);
+if(document.fonts?.ready)document.fonts.ready.then(()=>{if(selectedProduct?.kind==='sun')renderSun()});
+// Export textuel conservé à ce stade : convertir en contours avant gravure.
+function sunSvg(lines,font,productId){
+ const previousProduct=selectedProduct,previousFont=$('sunFont').value;
+ const old1=$('sunLine1').value,old2=$('sunLine2').value;
+ try{
+  selectedProduct=PRODUCTS.find(p=>p.id===productId)||previousProduct;
+  $('sunFont').value=font;$('sunLine1').value=lines[0]||'';$('sunLine2').value=lines[1]||'';
+  const geo=sunGeometry();
+  const esc=v=>String(v).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;');
+  const parts=geo.out.filter(o=>o.txt).map(o=>`<text x="${((o.x-geo.c.cx)/geo.c.pxPerMm+5).toFixed(5)}" y="${((o.y-geo.c.cy)/geo.c.pxPerMm+5).toFixed(5)}" text-anchor="middle" font-family="${esc(font)}" font-size="${(geo.size/geo.c.pxPerMm).toFixed(5)}" fill="black">${esc(o.txt)}</text>`).join('');
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="10mm" height="10mm" viewBox="0 0 10 10"><title>Gravure Soleil - verso uniquement (police non vectorisée)</title>${parts}</svg>`;
+ }finally{selectedProduct=previousProduct;$('sunFont').value=previousFont;$('sunLine1').value=old1;$('sunLine2').value=old2}
+}
+$('sunSave').onclick=()=>{
+ const lines=[$('sunLine1').value.trim(),$('sunLine2').value.trim()];
+ if(!lines[0]){alert('Saisissez la première ligne.');return}
+ if(sunGeometry().bad){alert('Le texte dépasse la zone gravable.');return}
+ const id='S'+Date.now().toString(36).toUpperCase();const all=getOrders();
+ all.push({id,created:new Date().toISOString(),customer:$('sunCustomer').value,product:selectedProduct.id,kind:'sun',lines,font:$('sunFont').value,items:lines.filter(Boolean).map(text=>({text})),paid:false});
+ putOrders(all);$('sunResult').textContent='Commande '+id+' enregistrée sur cet appareil uniquement.';
+};
+// La médaille existante conserve son moteur radial et ses tracés.
+const previousSave=$('save').onclick;
+$('save').onclick=()=>{const before=getOrders().length;previousSave();const all=getOrders();if(all.length>before){all[all.length-1].product=selectedProduct?.id||'medaille-argent';all[all.length-1].kind='medal';putOrders(all)}};
+// Export du Soleil en texte SVG : conversion en contours requise avant gravure.
+const previousShowOrders=showOrders;
+showOrders=function(){previousShowOrders();const all=getOrders().slice().reverse();const cards=$('orderList').querySelectorAll('.order');cards.forEach((card,i)=>{
+ const order=all[i];if(!order||order.kind!=='sun')return;
+ const btns=card.querySelectorAll('button');const exportButton=btns[1];if(!exportButton)return;
+ exportButton.textContent='Exporter SVG Soleil (texte)';
+ exportButton.onclick=()=>download(order.id+'-soleil-texte.svg',sunSvg(order.lines,order.font,order.product),'image/svg+xml');
+ });};
+
+// v3.11 — commandes exportables sans confirmation de paiement dans l’atelier.
+const PRICE_BY_PRODUCT={'medaille-argent':28,'soleil-or':35,'soleil-argent':35};
+const ORDER_STORAGE_KEY='monmedaillon-orders-v39'; // Clé conservée pour retrouver les commandes v3.9.
+function nextOrderId310(now){
+ const pad=n=>String(n).padStart(2,'0');
+ const localDay=now.getFullYear()+'-'+pad(now.getMonth()+1)+'-'+pad(now.getDate());
+ const prefix=pad(now.getDate())+'-'+pad(now.getMonth()+1)+'-';
+ const existing=orders39().filter(o=>{const d=new Date(o.created);return !Number.isNaN(d.getTime())&&d.getFullYear()===now.getFullYear()&&d.getMonth()===now.getMonth()&&d.getDate()===now.getDate()});
+ let n=1;for(const o of existing){if(o.id.startsWith(prefix)){const suffix=o.id.slice(prefix.length);if(/^\d+$/.test(suffix))n=Math.max(n,Number(suffix)+1)}}
+ const counterKey='monmedaillon-sequence-'+localDay;
+ const stored=Number(localStorage.getItem(counterKey)||0);n=Math.max(n,stored+1);
+ localStorage.setItem(counterKey,String(n));return prefix+pad(n);
+}
+let cart39=[],finalized39=false,client39=null;
+function orders39(){try{return JSON.parse(localStorage.getItem(ORDER_STORAGE_KEY)||'[]')}catch(e){return []}}
+function saveOrders39(list){localStorage.setItem(ORDER_STORAGE_KEY,JSON.stringify(list))}
+function showPage39(name){
+ for(const id of ['identity','home','workspace','cartPage','confirmPage','thanksPage'])$(id).classList.toggle('hidden',id!==name);
+ $('backToCatalog').classList.toggle('hidden',name!=='workspace');
+ if(name==='workspace')$('backToCatalog').classList.toggle('hidden',!selectedProduct);
+ window.scrollTo(0,0);
+}
+function validateIdentity39(){
+ const last=$('buyerLast').value.trim(),first=$('buyerFirst').value.trim(),phone=$('buyerPhone').value.trim();
+ if(!last||!first||!phone){$('identityError').textContent='Nom, prénom et téléphone sont obligatoires.';return false}
+ if(!/^[+\d\s().-]{6,25}$/.test(phone)||phone.replace(/\D/g,'').length<6){$('identityError').textContent='Veuillez vérifier votre numéro de téléphone.';return false}
+ client39={last,first,phone};$('identityError').textContent='';return true;
+}
+$('identityNext').onclick=()=>{if(validateIdentity39()&&cart39.length){$('confirmTotal').textContent=$('cartTotal').textContent;showPage39('confirmPage')}};
+$('identityBack').onclick=()=>showPage39('cartPage');
+function newCartEntry39(){
+ if(!selectedProduct)return null;
+ if(selectedProduct.kind==='sun'){
+  const lines=[$('sunLine1').value.trim(),$('sunLine2').value.trim()];
+  if(!lines[0]){alert('Saisissez la première ligne.');return null}
+  if(sunGeometry().bad){alert('Le texte dépasse la zone gravable.');return null}
+  return {product:selectedProduct.id,kind:'sun',lines,font:$('sunFont').value,price:PRICE_BY_PRODUCT[selectedProduct.id]};
+ }
+ if(items.some(t=>!t.text.trim())){alert('Remplissez tous les textes.');return null}
+ try{buildSvg(items)}catch(e){alert('Texte incompatible : '+e.message);return null}
+ return {product:selectedProduct.id,kind:'medal',items:JSON.parse(JSON.stringify(items)),price:PRICE_BY_PRODUCT[selectedProduct.id]};
+}
+function cartSummary39(){
+ const box=$('cartItems');box.replaceChildren();
+ cart39.forEach((entry,i)=>{
+  const line=document.createElement('div');line.className='cart-line';
+  const prod=PRODUCTS.find(p=>p.id===entry.product);
+  const texts=entry.kind==='sun'?entry.lines:entry.items.map(x=>x.text);
+  const name=document.createElement('strong');name.textContent=(i+1)+'. '+(prod?.name||entry.product)+' — '+entry.price+' €';
+  const detail=document.createElement('p');detail.textContent=texts.filter(Boolean).join(' / ');line.append(name,detail);
+  const remove=document.createElement('button');remove.className='secondary';remove.textContent='Retirer ce pendentif';remove.onclick=()=>{cart39.splice(i,1);cartSummary39();if(!cart39.length)showPage39('home')};line.append(remove);box.append(line);
+ });
+ const total=cart39.reduce((sum,e)=>sum+e.price,0);
+ $('cartTotal').textContent='Total : '+total.toFixed(2).replace('.',',')+' €';
+ $('checkoutStart').disabled=!cart39.length;
+}
+function addCurrent39(){if(finalized39)return;const entry=newCartEntry39();if(!entry)return;cart39.push(entry);cartSummary39();showPage39('cartPage')}
+$('save').onclick=addCurrent39;$('sunSave').onclick=addCurrent39;
+$('addPendant').onclick=()=>showPage39('home');
+$('checkoutStart').onclick=()=>{if(!cart39.length)return;showPage39('identity')};
+$('confirmBack').onclick=()=>showPage39('identity');
+$('confirmYes').onclick=()=>{
+ if(finalized39||!cart39.length||!client39)return;
+ $('confirmYes').disabled=true;
+ const now=new Date(),stamp=now.toISOString(),id=nextOrderId310(now);
+ const order={id,created:stamp,customer:{...client39},pendants:JSON.parse(JSON.stringify(cart39)),total:cart39.reduce((sum,x)=>sum+x.price,0),paid:false};
+ try{const all=orders39();all.push(order);saveOrders39(all);finalized39=true;
+ $('thanksOrderNumber').textContent=id;
+ $('thanksTotalAmount').textContent=order.total.toFixed(2).replace('.',',')+' €';
+ showPage39('thanksPage');
+ setTimeout(()=>syncToMac312(false),100);
+ }catch(e){alert('La commande n’a pas été enregistrée. Ne quittez pas cette page : '+e.message);$('confirmYes').disabled=false}
+};
+$('freshStart').onclick=()=>{
+ cart39=[];finalized39=false;client39=null;selectedProduct=null;
+ $('buyerLast').value='';$('buyerFirst').value='';$('buyerPhone').value='';
+ $('sunLine1').value='';$('sunLine2').value='';
+ $('confirmYes').disabled=false;showPage39('home');
+};
+// Navigation : ne jamais perdre le panier en retournant au catalogue.
+$('backToCatalog').onclick=()=>showPage39('home');
+$('clientBtn').onclick=()=>{if(finalized39)showPage39('thanksPage');else showPage39(cart39.length?'cartPage':'home')};
+$('ordersBtn').onclick=()=>{
+ for(const id of ['identity','home','cartPage','confirmPage','thanksPage'])$(id).classList.add('hidden');
+ $('workspace').classList.remove('hidden');$('backToCatalog').classList.add('hidden');
+ for(const id of ['editor','settings','sunEditor','sunSettings'])$(id).classList.add('hidden');
+ $('orders').classList.remove('hidden');if(!$('atelier').classList.contains('hidden'))showOrders();
+};
+// Fichiers SVG : modèle, nom, prénom, date, numéro commun et index du pendentif.
+function safePart39(v){return String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,45)||'inconnu'}
+const MODEL_EXPORT_LABELS={'medaille-argent':'Rond-Argente','soleil-or':'Soleil-Dore','soleil-argent':'Soleil-Argente'};
+function filename39(order,entry,i){return [safePart39(order.customer.last),safePart39(order.customer.first),MODEL_EXPORT_LABELS[entry.product]||safePart39(entry.product),safePart39(order.id.replace(/^(\d{2})-(\d{2})-/,'$1$2-')),'P'+(i+1)].join('-')+'.svg'}
+function exportEntry39(order,entry,i){
+ const filename=filename39(order,entry,i);
+ if(entry.kind==='sun')download(filename,sunSvg(entry.lines,entry.font,entry.product),'image/svg+xml');
+ else exportSvg(entry.items,filename);
+}
+showOrders=function(){
+ const root=$('orderList');root.replaceChildren();const all=orders39();
+ if(!all.length){root.textContent='Aucune commande confirmée sur cet appareil.';return}
+ all.slice().reverse().forEach(order=>{
+  const card=document.createElement('div');card.className='order';
+  const heading=document.createElement('h3');heading.textContent=order.id+' — '+order.customer.last+' '+order.customer.first;card.append(heading);
+  const details=document.createElement('p');details.textContent='Téléphone : '+order.customer.phone+' · '+new Date(order.created).toLocaleString('fr-FR')+' · Total : '+order.total.toFixed(2).replace('.',',')+' € · Paiement à vérifier auprès de la vendeuse';card.append(details);
+  order.pendants.forEach((entry,i)=>{
+   const p=document.createElement('p');p.textContent='P'+(i+1)+' — '+(PRODUCTS.find(x=>x.id===entry.product)?.name||entry.product)+' — '+entry.price+' € — '+(entry.kind==='sun'?entry.lines:entry.items.map(x=>x.text)).filter(Boolean).join(' / ');card.append(p);
+   const btn=document.createElement('button');btn.textContent='Exporter SVG P'+(i+1);btn.onclick=()=>exportEntry39(order,entry,i);card.append(btn);
+  });root.append(card);
+ });
+};
+$('backup').onclick=()=>download('commandes-medaillon-v311.json',JSON.stringify(orders39(),null,2),'application/json');
+// v3.12 — restauration non destructive et transfert facultatif sur le réseau local.
+function validOrder312(o){
+ return o&&typeof o==='object'&&typeof o.id==='string'&&o.id.length>0&&o.id.length<90&&
+ typeof o.created==='string'&&o.customer&&typeof o.customer.last==='string'&&
+ typeof o.customer.first==='string'&&typeof o.customer.phone==='string'&&
+ Array.isArray(o.pendants)&&o.pendants.length>0&&o.pendants.length<=100&&
+ o.pendants.every(p=>p&&['medal','sun'].includes(p.kind)&&typeof p.product==='string'&&
+ (p.kind==='sun'?Array.isArray(p.lines)&&typeof p.font==='string':Array.isArray(p.items)));
+}
+$('restore').onclick=async()=>{
+ const f=$('restoreFile').files?.[0],status=$('restoreStatus');
+ if(!f){status.textContent='Sélectionnez d’abord un fichier JSON.';return}
+ if(f.size>12*1024*1024){status.textContent='Fichier trop volumineux (maximum 12 Mo).';return}
+ try{
+  const parsed=JSON.parse(await f.text());
+  if(!Array.isArray(parsed)||!parsed.every(validOrder312))throw Error('Le fichier ne contient pas une liste de commandes compatible.');
+  const current=orders39(),known=new Map(current.map(o=>[o.id,JSON.stringify(o)]));
+  let added=0,duplicates=0,conflicts=0;
+  for(const o of parsed){
+   if(known.has(o.id)){
+    if(known.get(o.id)===JSON.stringify(o))duplicates++;
+    else conflicts++;
+   }else{known.set(o.id,JSON.stringify(o));added++}
+  }
+  if(conflicts){status.textContent=conflicts+' numéro(s) déjà utilisé(s) pour des données différentes. Import annulé : aucune commande modifiée.';return}
+  if(!added){status.textContent='Aucune nouvelle commande à importer ('+duplicates+' déjà présentes).';return}
+  if(!confirm('Ajouter '+added+' commande(s) à l’atelier ? Les '+current.length+' commandes existantes seront conservées.'))return;
+  const merged=[...known.values()].map(x=>JSON.parse(x));
+  saveOrders39(merged);showOrders();
+  status.textContent=added+' commande(s) restaurée(s), '+duplicates+' déjà présentes. Faites une sauvegarde JSON.';
+ }catch(e){status.textContent='Restauration impossible : '+e.message}
+};
+const SYNC_URL_KEY312='monmedaillon-mac-url',SYNC_TOKEN_KEY312='monmedaillon-mac-token';
+$('macUrl').value=localStorage.getItem(SYNC_URL_KEY312)||'';
+$('macToken').value=localStorage.getItem(SYNC_TOKEN_KEY312)||'';
+$('saveSyncSettings').onclick=()=>{
+ const u=$('macUrl').value.trim().replace(/\/+$/,'');
+ if(u&&!/^https?:\/\/[a-zA-Z0-9.:-]+$/.test(u)){$('syncStatus').textContent='Adresse invalide. Exemple : http://192.168.1.20:8765';return}
+ localStorage.setItem(SYNC_URL_KEY312,u);localStorage.setItem(SYNC_TOKEN_KEY312,$('macToken').value.trim());
+ $('syncStatus').textContent='Réglages enregistrés sur cet appareil. Le code est stocké localement (protection limitée).';
+};
+let syncBusy312=false;
+async function syncToMac312(manual){
+ if(syncBusy312)return;
+ const url=(localStorage.getItem(SYNC_URL_KEY312)||'').replace(/\/+$/,'');
+ const token=localStorage.getItem(SYNC_TOKEN_KEY312)||'';
+ const status=$('syncStatus');
+ if(!url||!token){if(manual)status.textContent='Renseignez et enregistrez l’adresse du Mac et le code secret.';return}
+ const orders=orders39().filter(validOrder312);
+ if(!orders.length){if(manual)status.textContent='Aucune commande à envoyer.';return}
+ syncBusy312=true;if(manual)status.textContent='Envoi en cours…';
+ try{
+  const payload=orders.map(o=>({order:o,exports:o.pendants.map((entry,i)=>({filename:filename39(o,entry,i),svg:entry.kind==='sun'?sunSvg(entry.lines,entry.font,entry.product):buildSvg(entry.items)}))}));
+  const ctrl=new AbortController(),timeout=setTimeout(()=>ctrl.abort(),9000);
+  let res;
+  try{res=await fetch(url+'/api/sync',{method:'POST',headers:{'Content-Type':'application/json','X-Medaillon-Key':token},body:JSON.stringify({orders:payload}),signal:ctrl.signal})}finally{clearTimeout(timeout)}
+  if(!res.ok)throw Error('Récepteur Mac : '+res.status);
+  const data=await res.json();
+  status.textContent='Mac : '+data.added+' nouvelle(s) commande(s), '+data.existing+' déjà reçue(s). '+new Date().toLocaleTimeString('fr-FR');
+ }catch(e){if(manual)status.textContent='Transfert impossible : '+e.message+'. Vérifiez le Wi-Fi, le récepteur Mac et les autorisations Safari.'}
+ finally{syncBusy312=false}
+}
+$('syncNow').onclick=()=>syncToMac312(true);
+window.addEventListener('online',()=>syncToMac312(false));
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncToMac312(false)});
+setInterval(()=>{if(!document.hidden)syncToMac312(false)},60000);
+
+// Les coordonnées sont demandées après la sélection des pendentifs.
+showPage39('home');
+</script></body></html>
